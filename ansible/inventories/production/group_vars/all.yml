@@ -24,12 +24,6 @@ php_fpm_version: "8.3"
 # nginx setting jinja
 private_ip_mysql: "10.0.2.157" # private ip mysql untuk phpmyadmin
 
-# MySQL host (untuk file .env laravel)
-# mysql_host: 10.0.2.102
-# mysql_username_env: xynamons
-# mysql_password_env: Xerq07q9889#
-# mysql_user_host_laravel: localhost
-
 #bind addreess
 host_ip_bind_address: 10.0.2.38
 
