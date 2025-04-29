@@ -1,0 +1,65 @@
+# @format
+---
+- name: Ensure Nginx installed
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Ensure Nginx service is running
+  service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Ensure SSL directory exists
+  file:
+    path: /etc/ssl/laravel
+    state: directory
+    mode: "0755"
+
+- name: Upload SSL certificate
+  copy:
+    src: ssl/laravel.pem
+    dest: /etc/ssl/laravel/laravel.pem
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Upload SSL key
+  copy:
+    src: ssl/laravel.key
+    dest: /etc/ssl/laravel/laravel.key
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Deploy Nginx config for Laravel with SSL
+  template:
+    src: laravel.conf.j2
+    dest: /etc/nginx/sites-available/laravel-ssl.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable Laravel SSL Nginx site
+  file:
+    src: /etc/nginx/sites-available/laravel-ssl.conf
+    dest: /etc/nginx/sites-enabled/laravel-ssl.conf
+    state: link
+    force: yes
+
+- name: Disable default Nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Test Nginx configuration
+  command: nginx -t
+  register: nginx_test_result
+  failed_when: nginx_test_result.rc != 0
+
+- name: Reload Nginx
+  service:
+    name: nginx
+    state: reloaded

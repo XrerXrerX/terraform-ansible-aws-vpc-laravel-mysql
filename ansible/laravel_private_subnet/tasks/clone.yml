@@ -1,0 +1,22 @@
+# @format
+---
+- name: Ensure git is installed
+  apt:
+    name: git
+    state: present
+    update_cache: yes
+
+- name: Ensure {{ laravel_app_path }} is marked as safe.directory for git
+  command: git config --global --add safe.directory {{ laravel_app_path }}
+  become: yes
+  become_user: root
+  args:
+    creates: /root/.gitconfig
+
+- name: Clone Laravel repo
+  git:
+    repo: "{{ laravel_repo_url }}"
+    dest: "{{ laravel_app_path }}"
+    update: yes
+    force: yes
+    version: "{{ laravel_repo_branch }}"

@@ -1,0 +1,97 @@
+# @format
+
+#mysql create first localuser
+mysql_username_local: test1234
+mysql_password_local: test1234
+mysql_user_host_local: localhost
+
+#mysql create first binduser
+mysql_username: bind1234
+mysql_password: bind1234#
+mysql_user_host: 10.0.2.38 <-- ip jika ingin ada binding
+
+phpmyadmin_allowed_subnets:
+  - "10.2.2.101"
+  - "127.0.0.1"
+
+laravel_allowed_subnets:
+  - "10.2.2.101"
+  - "127.0.0.1"
+
+# Versi PHP-FPM yang digunakan di semua server
+php_fpm_version: "8.3"
+
+# nginx setting jinja
+private_ip_mysql: "10.0.2.157" # private ip mysql untuk phpmyadmin
+
+# MySQL host (untuk file .env laravel)
+# mysql_host: 10.0.2.102
+# mysql_username_env: xynamons
+# mysql_password_env: Xerq07q9889#
+# mysql_user_host_laravel: localhost
+
+#bind addreess
+host_ip_bind_address: 10.0.2.38
+
+# ---- Laravel ----
+# Laravel App Configuration
+laravel_repo_url: "https://github.com/your-org/your-laravel-project.git"
+laravel_repo_branch: "main"
+laravel_app_path: "/var/www/laravel"
+
+# Database Configuration
+laravel_db_host: "10.0.2.157"
+laravel_db_name: "production_db"
+laravel_db_user: "prod_user"
+laravel_db_password: "VeryS3cureP@ssw0rd!"
+laravel_db_port: "3306"
+laravel_db_connection: "mysql"
+
+# SSL Configuration
+laravel_server_name: "domain_access"
+laravel_ssl_cert: "/etc/ssl/laravel/laravel.pem"
+laravel_ssl_key: "/etc/ssl/laravel/laravel.key"
+
+# ---- Laravel Environment ----
+env: prod
+
+app_env_map:
+  prod: production
+  dev: local
+
+# ---- phpMyAdmin allow bastion private tempalate--
+phpmyadmin_allowed_ips:
+  - 3123.123.123/32
+  - 123.123.13/24
+  - 213.254.115
+  - 121.121.111.78/32
+phpmyadmin_path: "/usr/share/phpmyadmin"
+
+# ---- Nginx Proxy ----
+nginx_proxy_server_name: "domain_access"
+nginx_proxy_laravel_private_ip: "10.0.2.38"
+nginx_proxy_phpmyadmin_private_ip: "10.0.2.102"
+
+# ---- Ansible Common ----
+ansible_python_interpreter: /usr/bin/python3
+# ansible_ssh_private_key_file: "/path/to/main-key.pem" # set ini di host_vars jika tiap host beda
+
+# ---- Extra (allowed SSH key, timezone, dsb) ----
+timezone: "Asia/Jakarta"
+
+# ---- Security/allowed_ips ----
+allowed_ips:
+  - "10.0.1.0/24"
+  - "127.0.0.1"
+
+# ---- aws back up s3 ----
+aws_access_key_id: "ACCESS_KEY_ID"
+aws_secret_access_key: "SECRET_KEY_ID"
+aws_region: "REGION"
+db_name:
+  - testdb1
+  - testdb2
+db_user: "root"
+s3_bucket: "s3://test.auto"
+# Untuk production, sensitive variable sebaiknya dienkripsi dengan 'ansible-vault'!
+

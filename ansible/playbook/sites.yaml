@@ -1,0 +1,22 @@
+# @format
+
+- hosts: mysql_private
+  become: yes
+  roles:
+    - mysql
+    - phpmyadmin
+
+- hosts: laravel_private
+  become: yes
+  roles:
+    - laravel_private_subnet
+
+- hosts: nginx_public_bastion
+  become: yes
+  roles:
+    - nginx_proxy_phpmyadmin
+
+- hosts: nginx_proxy_laravel
+  become: yes
+  roles:
+    - nginx_proxy_laravel

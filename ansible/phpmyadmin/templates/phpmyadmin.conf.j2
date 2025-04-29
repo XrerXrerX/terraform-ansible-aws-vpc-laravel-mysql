@@ -1,0 +1,23 @@
+server {
+    listen 80;
+    server_name {{ ansible_facts['default_ipv4']['address'] }};
+
+    location /phpmyadmin {
+        alias /usr/share/phpmyadmin;
+        index index.php index.html index.htm;
+    }
+    location ~ ^/phpmyadmin/(.+\.php)$ {
+        fastcgi_pass unix:/var/run/php/php{{ php_fpm_version }}-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME /usr/share/phpmyadmin/$1;
+        include fastcgi_params;
+    }
+    location ~* ^/phpmyadmin/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ {
+        root /usr/share/;
+    }
+
+    {% for ip in phpmyadmin_allowed_subnets %}
+    allow {{ ip }};
+    {% endfor %}
+    deny all;
+}

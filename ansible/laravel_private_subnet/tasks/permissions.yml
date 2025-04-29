@@ -1,0 +1,13 @@
+---
+- name: Set permissions for Laravel directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0775'
+    recurse: yes
+  loop:
+    - "{{ laravel_app_path }}"
+    - "{{ laravel_app_path }}/storage"
+    - "{{ laravel_app_path }}/bootstrap/cache"

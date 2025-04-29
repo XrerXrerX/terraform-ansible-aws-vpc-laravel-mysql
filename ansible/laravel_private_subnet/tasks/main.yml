@@ -1,0 +1,9 @@
+# @format
+---
+# tasks file for laravel_deploy
+- import_tasks: clone.yml
+- import_tasks: permissions.yml
+- import_tasks: env.yml
+- import_tasks: php-fpm.yml
+- import_tasks: composer.yml
+- import_tasks: nginx_private.yml

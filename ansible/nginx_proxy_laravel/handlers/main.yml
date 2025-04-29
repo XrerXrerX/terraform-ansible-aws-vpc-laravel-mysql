@@ -1,0 +1,7 @@
+# @format
+---
+# handlers file for nginx_proxy
+- name: Reload nginx
+  service:
+    name: nginx
+    state: reloaded

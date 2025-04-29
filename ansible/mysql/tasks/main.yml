@@ -1,0 +1,56 @@
+# @format
+---
+- name: Ensure python3-pymysql is installed (for Ansible MySQL modules)
+  apt:
+    name: python3-pymysql
+    state: present
+    update_cache: yes
+
+- name: Install MySQL server
+  apt:
+    name: mysql-server
+    state: present
+    update_cache: yes
+
+- name: Ensure MySQL running
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+
+#buat account untuk host local
+- name: Create MySQL user {{ mysql_username_local }}@{{ mysql_user_host_local }}
+  community.mysql.mysql_user:
+    name: "{{ mysql_username_local }}"
+    password: "{{ mysql_password_local }}"
+    host: "{{ mysql_user_host_local }}"
+    priv: "*.*:ALL,GRANT"
+    state: present
+    login_user: root
+    #login_password: "{{ mysql_root_password }}"
+    # atau jika root MySQL tanpa password, bisa hilangkan login_password
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+  #no_log: true
+
+#buat account untuk host ip yang akan login dari luar
+- name: Create MySQL user {{ mysql_username }}@{{ mysql_password }}
+  community.mysql.mysql_user:
+    name: "{{ mysql_username }}"
+    password: "{{ mysql_password }}"
+    host: "{{ mysql_user_host }}"
+    priv: "*.*:ALL,GRANT"
+    state: present
+    login_user: root
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+# - name: Create database for laravel
+#   community.mysql.mysql_db:
+#     name: laravel_db
+#     state: present
+#     login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Ensure MySQL listen on all interfaces
+  lineinfile:
+    path: /etc/mysql/mysql.conf.d/mysqld.cnf
+    regexp: "^bind-address"
+    line: "bind-address = 0.0.0.0"
+  notify: Restart mysql

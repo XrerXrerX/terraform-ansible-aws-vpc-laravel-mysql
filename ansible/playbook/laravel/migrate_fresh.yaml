@@ -1,0 +1,8 @@
+# @format
+- hosts: laravel_private
+  become: yes
+  tasks:
+    - name: migrate fresh database
+      include_role:
+        name: laravel
+        tasks_from: migrate_fresh.yml

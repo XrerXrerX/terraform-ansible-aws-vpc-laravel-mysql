@@ -1,0 +1,43 @@
+# @format
+---
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Ensure Nginx service is running
+  service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Configure Nginx as reverse proxy to phpMyAdmin in private subnet
+  template:
+    src: nginx_proxy.conf.j2
+    dest: /etc/nginx/sites-available/phpmyadmin
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable Nginx config
+  file:
+    src: /etc/nginx/sites-available/phpmyadmin
+    dest: /etc/nginx/sites-enabled/phpmyadmin
+    state: link
+    force: yes
+
+- name: Remove default site if present in sites-enabled
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Test Nginx configuration
+  command: nginx -t
+  register: nginx_test_result
+  failed_when: nginx_test_result.rc != 0
+
+- name: Reload Nginx
+  service:
+    name: nginx
+    state: reloaded

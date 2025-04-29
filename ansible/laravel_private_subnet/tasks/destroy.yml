@@ -1,0 +1,44 @@
+# @format
+---
+- name: Cek folder sebelum hapus
+  command: ls -l "{{ laravel_app_path }}"
+  ignore_errors: yes
+
+- name: Remove Laravel app folder
+  file:
+    path: "{{ laravel_app_path }}"
+    state: absent
+
+- name: Remove Nginx config (sites-available)
+  file:
+    path: "/etc/nginx/sites-available/laravel-ssl.conf"
+    state: absent
+
+- name: Remove Nginx config (sites-enabled symlink)
+  file:
+    path: "/etc/nginx/sites-enabled/laravel-ssl.conf"
+    state: absent
+
+- name: Reload Nginx
+  service:
+    name: nginx
+    state: reloaded
+
+- name: Remove SSL certificate file
+  file:
+    path: "{{ laravel_ssl_cert }}"
+    state: absent
+
+- name: Remove SSL key file
+  file:
+    path: "{{ laravel_ssl_key }}"
+    state: absent
+- name: Remove Composer if needed
+  file:
+    path: /usr/local/bin/composer
+    state: absent
+
+- name: Remove Composer installer if left
+  file:
+    path: /tmp/composer-setup.php
+    state: absent

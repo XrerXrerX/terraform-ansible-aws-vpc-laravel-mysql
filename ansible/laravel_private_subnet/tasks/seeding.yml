@@ -1,0 +1,8 @@
+# @format
+---
+- name: Run Laravel migrate and seed
+  command: php artisan migrate --seed --force
+  args:
+    chdir: "{{ laravel_app_path }}"
+  environment:
+    APP_ENV: production

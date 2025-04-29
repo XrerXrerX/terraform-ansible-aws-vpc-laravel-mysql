@@ -1,0 +1,82 @@
+# @format
+---
+- name: Add PHP PPA ondrej (optional)
+  apt_repository:
+    repo: ppa:ondrej/php
+    state: present
+    update_cache: yes
+
+- name: Install PHP {{ php_fpm_version }} dan fpm
+  apt:
+    name:
+      - php{{ php_fpm_version }}
+      - php{{ php_fpm_version }}-fpm
+      - php{{ php_fpm_version }}-mysql
+      - php{{ php_fpm_version }}-mbstring
+      - php{{ php_fpm_version }}-zip
+      - php{{ php_fpm_version }}-gd
+      - php{{ php_fpm_version }}-curl
+      - php{{ php_fpm_version }}-xml
+      - php{{ php_fpm_version }}-ctype
+      - php{{ php_fpm_version }}-bcmath
+      - php{{ php_fpm_version }}-intl
+      - php{{ php_fpm_version }}-opcache
+    state: present
+    update_cache: yes
+
+- name: Set default PHP CLI ke {{ php_fpm_version }}
+  alternatives:
+    name: php
+    path: /usr/bin/php{{ php_fpm_version }}
+    priority: 110
+  become: yes
+
+- name: Restart PHP-FPM {{ php_fpm_version }}
+  service:
+    name: "php{{ php_fpm_version }}-fpm"
+    state: restarted
+
+- name: Ensure php config directory exists
+  file:
+    path: /etc/php
+    state: directory
+    mode: 0755
+
+- name: Install nginx first!
+  apt:
+    name:
+      - nginx
+    state: present
+    update_cache: yes
+
+- name: Ensure nginx is started
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+# tasks file for phpmyadmin
+- name: Install phpmyadmin
+  apt:
+    name: phpmyadmin
+    state: present
+    update_cache: yes
+
+- name: Ensure Nginx conf.d exists
+  file:
+    path: /etc/nginx/conf.d
+    state: directory
+
+- name: Remove default site if present in sites-enabled
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Deploy phpmyadmin nginx config
+  template:
+    src: phpmyadmin.conf.j2
+    dest: /etc/nginx/conf.d/phpmyadmin.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Reload nginx

@@ -1,0 +1,63 @@
+# @format
+---
+- name: Ensure dependencies for Composer are installed
+  apt:
+    name:
+      - curl
+      - php-cli
+      - php-mbstring
+      - git
+      - unzip
+    state: present
+    update_cache: yes
+
+- name: Download Composer installer
+  get_url:
+    url: https://getcomposer.org/installer
+    dest: /tmp/composer-setup.php
+    mode: "0755"
+
+- name: Install Composer globally
+  command: >
+    php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+  args:
+    creates: /usr/local/bin/composer
+
+- name: Install Composer dependencies (DEV)
+  command: composer update --no-interaction --prefer-dist --optimize-autoloader
+  args:
+    chdir: "{{ laravel_app_path }}"
+  environment:
+    COMPOSER_ALLOW_SUPERUSER: "1"
+  when: env == 'dev'
+
+- name: Install Composer dependencies (PROD)
+  command: composer install --no-interaction --prefer-dist --optimize-autoloader
+  args:
+    chdir: "{{ laravel_app_path }}"
+  environment:
+    COMPOSER_ALLOW_SUPERUSER: "1"
+  when: env == 'prod'
+
+- name: Generate Laravel app key (dengan timeout)
+  command: php artisan key:generate
+  args:
+    chdir: "{{ laravel_app_path }}"
+  async: 30
+  poll: 5
+  environment:
+    APP_ENV: production
+
+- name: Create storage symbolic link
+  command: php artisan storage:link
+  args:
+    chdir: "{{ laravel_app_path }}"
+  environment:
+    APP_ENV: production
+
+- name: Run Laravel migrate and seed
+  command: php artisan migrate --force
+  args:
+    chdir: "{{ laravel_app_path }}"
+  environment:
+    APP_ENV: production

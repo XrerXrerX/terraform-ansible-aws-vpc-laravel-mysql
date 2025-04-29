@@ -1,0 +1,22 @@
+# @format
+---
+# roles/playbook/laravel/tasks/migrate.yaml
+- name: Ensure database {{ laravel_db_name }} exists
+  community.mysql.mysql_db:
+    name: "{{ laravel_db_name }}"
+    state: present
+    login_user: root
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Pull latest code from git
+  git:
+    repo: "{{ laravel_repo_url }}"
+    dest: "{{ laravel_app_path }}"
+    version: "{{ laravel_repo_branch | default('main') }}"
+    force: yes
+    accept_hostkey: yes
+
+- name: Run Laravel migrate
+  command: php artisan migrate --force
+  args:
+    chdir: "{{ laravel_app_path }}"
