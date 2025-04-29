@@ -61,7 +61,7 @@ Public IP Nginx
 
 Private IP Laravel & MySQL
 
-![Terraform Done](./terraform_done.png)
+![Terraform Done](./terraform_done.jpg)
 
 2. Konfigurasi dengan Ansible
    cd ../ansible/
@@ -87,4 +87,4 @@ inventories/: Struktur host untuk Ansible (termasuk ProxyJump)
 ✍️ Kontribusi
 Silakan forking atau membuat PR untuk perbaikan dan saran!
 
-![Ansible Done](./ansible_done.png)
+![Ansible Done](./ansible_done.jpg)
